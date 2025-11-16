@@ -1,6 +1,7 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
 import { Building2, LayoutDashboard, Bed, Calendar, DollarSign, Users, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { PGSelector } from "@/components/PGSelector";
 
 const Layout = () => {
   const location = useLocation();
@@ -26,7 +27,11 @@ const Layout = () => {
             <p className="text-xs text-muted-foreground">Admin Panel</p>
           </div>
         </div>
-        
+
+        <div className="p-4 border-b">
+          <PGSelector />
+        </div>
+
         <nav className="p-4 space-y-2">
           {menuItems.map((item) => {
             const Icon = item.icon;

@@ -1,14 +1,18 @@
+import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Plus } from "lucide-react";
+import { usePGContext } from "@/context/PGContext";
 
 const Bookings = () => {
-  const bookings = [
-    { id: 1, room: "101", tenant: "Rajesh Kumar", startDate: "2024-01-15", endDate: "2024-07-15", status: "Active" },
-    { id: 2, room: "205", tenant: "Priya Sharma", startDate: "2024-01-10", endDate: "2024-06-10", status: "Active" },
-    { id: 3, room: "302", tenant: "Amit Patel", startDate: "2024-02-01", endDate: "2024-08-01", status: "Upcoming" },
-  ];
+  const { selectedPG, bookings: allBookings } = usePGContext();
+
+  // Filter bookings for selected PG
+  const bookings = useMemo(() =>
+    allBookings.filter(booking => booking.pgId === selectedPG?.id),
+    [allBookings, selectedPG]
+  );
 
   const getStatusColor = (status: string) => {
     return status === "Active" ? "bg-success/10 text-success" : "bg-primary/10 text-primary";
@@ -19,7 +23,9 @@ const Bookings = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Bookings</h1>
-          <p className="text-muted-foreground">Manage current and future bookings</p>
+          <p className="text-muted-foreground">
+            {selectedPG ? `${selectedPG.name} - ${bookings.length} bookings` : 'Select a property to view bookings'}
+          </p>
         </div>
         <Button>
           <Plus className="h-4 w-4 mr-2" />

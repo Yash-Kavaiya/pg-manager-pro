@@ -1,15 +1,19 @@
+import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Phone, Mail } from "lucide-react";
+import { usePGContext } from "@/context/PGContext";
 
 const Tenants = () => {
-  const tenants = [
-    { id: 1, name: "Rajesh Kumar", room: "101", phone: "+91 98765 43210", email: "rajesh@email.com", status: "Active", joinDate: "2024-01-15" },
-    { id: 2, name: "Priya Sharma", room: "205", phone: "+91 98765 43211", email: "priya@email.com", status: "Active", joinDate: "2024-01-10" },
-    { id: 3, name: "Amit Patel", room: "302", phone: "+91 98765 43212", email: "amit@email.com", status: "Notice Period", joinDate: "2024-01-08" },
-  ];
+  const { selectedPG, tenants: allTenants } = usePGContext();
+
+  // Filter tenants for selected PG
+  const tenants = useMemo(() =>
+    allTenants.filter(tenant => tenant.pgId === selectedPG?.id),
+    [allTenants, selectedPG]
+  );
 
   const getInitials = (name: string) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
@@ -20,7 +24,9 @@ const Tenants = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Tenant Management</h1>
-          <p className="text-muted-foreground">Manage tenant profiles and information</p>
+          <p className="text-muted-foreground">
+            {selectedPG ? `${selectedPG.name} - ${tenants.length} tenants` : 'Select a property to view tenants'}
+          </p>
         </div>
         <Button>
           <Plus className="h-4 w-4 mr-2" />

@@ -1,18 +1,18 @@
-import { useState } from "react";
+import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Bed, Users, DollarSign } from "lucide-react";
+import { usePGContext } from "@/context/PGContext";
 
 const Rooms = () => {
-  const [rooms] = useState([
-    { id: 1, number: "101", type: "Single", rent: 8000, deposit: 16000, status: "Occupied", floor: 1 },
-    { id: 2, number: "102", type: "Double", rent: 12000, deposit: 24000, status: "Available", floor: 1 },
-    { id: 3, number: "201", type: "Single", rent: 8500, deposit: 17000, status: "Occupied", floor: 2 },
-    { id: 4, number: "202", type: "Double", rent: 12500, deposit: 25000, status: "Available", floor: 2 },
-    { id: 5, number: "301", type: "Single", rent: 9000, deposit: 18000, status: "Maintenance", floor: 3 },
-    { id: 6, number: "302", type: "Double", rent: 13000, deposit: 26000, status: "Occupied", floor: 3 },
-  ]);
+  const { selectedPG, rooms: allRooms } = usePGContext();
+
+  // Filter rooms for selected PG
+  const rooms = useMemo(() =>
+    allRooms.filter(room => room.pgId === selectedPG?.id),
+    [allRooms, selectedPG]
+  );
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -28,7 +28,9 @@ const Rooms = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Room Management</h1>
-          <p className="text-muted-foreground">Manage your PG room inventory</p>
+          <p className="text-muted-foreground">
+            {selectedPG ? `${selectedPG.name} - ${rooms.length} rooms` : 'Select a property to view rooms'}
+          </p>
         </div>
         <Button>
           <Plus className="h-4 w-4 mr-2" />

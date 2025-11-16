@@ -12,6 +12,7 @@ import Payments from "./pages/Payments";
 import Tenants from "./pages/Tenants";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
+import { PGProvider } from "./context/PGContext";
 
 const queryClient = new QueryClient();
 
@@ -20,21 +21,23 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Navigate to="/auth" replace />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route element={<Layout />}>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/rooms" element={<Rooms />} />
-            <Route path="/bookings" element={<Bookings />} />
-            <Route path="/payments" element={<Payments />} />
-            <Route path="/tenants" element={<Tenants />} />
-          </Route>
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <PGProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Navigate to="/auth" replace />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route element={<Layout />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/rooms" element={<Rooms />} />
+              <Route path="/bookings" element={<Bookings />} />
+              <Route path="/payments" element={<Payments />} />
+              <Route path="/tenants" element={<Tenants />} />
+            </Route>
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </PGProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
