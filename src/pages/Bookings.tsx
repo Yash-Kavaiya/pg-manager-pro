@@ -1,198 +1,18 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Plus, Eye, Edit, DollarSign, TrendingUp, Users, FileText } from "lucide-react";
-import { Booking } from "@/types/booking";
-import { BookingFormDialog } from "@/components/BookingFormDialog";
-import { BookingDetailsDialog } from "@/components/BookingDetailsDialog";
-import { BookingFilters } from "@/components/BookingFilters";
-import { AddPaymentDialog } from "@/components/AddPaymentDialog";
+import { Calendar, Plus } from "lucide-react";
+import { usePGContext } from "@/context/PGContext";
 
 const Bookings = () => {
-  // Sample data with enhanced details
-  const [bookings, setBookings] = useState<Booking[]>([
-    {
-      id: 1,
-      room: "101",
-      tenant: "Rajesh Kumar",
-      email: "rajesh.kumar@example.com",
-      phone: "+91 98765 43210",
-      startDate: "2024-01-15",
-      endDate: "2024-07-15",
-      status: "Active",
-      monthlyRent: 5000,
-      securityDeposit: 10000,
-      advance: 5000,
-      payments: [
-        {
-          id: "p1",
-          amount: 5000,
-          date: "2024-01-15",
-          method: "UPI",
-          status: "Paid",
-          receiptNumber: "RCP001",
-        },
-        {
-          id: "p2",
-          amount: 5000,
-          date: "2024-02-15",
-          method: "Cash",
-          status: "Paid",
-        },
-        {
-          id: "p3",
-          amount: 5000,
-          date: "2024-03-15",
-          method: "UPI",
-          status: "Paid",
-        },
-      ],
-      emergencyContact: {
-        name: "Suresh Kumar",
-        phone: "+91 98765 00000",
-        relation: "Father",
-      },
-      checkInDate: "2024-01-15",
-      notes: "Prefers ground floor. Vegetarian.",
-      createdAt: "2024-01-10T10:00:00Z",
-      updatedAt: "2024-03-15T14:30:00Z",
-    },
-    {
-      id: 2,
-      room: "205",
-      tenant: "Priya Sharma",
-      email: "priya.sharma@example.com",
-      phone: "+91 98765 43211",
-      startDate: "2024-01-10",
-      endDate: "2024-06-10",
-      status: "Active",
-      monthlyRent: 6000,
-      securityDeposit: 12000,
-      payments: [
-        {
-          id: "p4",
-          amount: 6000,
-          date: "2024-01-10",
-          method: "Bank Transfer",
-          status: "Paid",
-          receiptNumber: "RCP002",
-        },
-        {
-          id: "p5",
-          amount: 6000,
-          date: "2024-02-10",
-          method: "UPI",
-          status: "Paid",
-        },
-        {
-          id: "p6",
-          amount: 3000,
-          date: "2024-03-10",
-          method: "Cash",
-          status: "Partial",
-          notes: "Partial payment, remaining 3000 pending",
-        },
-      ],
-      emergencyContact: {
-        name: "Ramesh Sharma",
-        phone: "+91 98765 11111",
-        relation: "Father",
-      },
-      checkInDate: "2024-01-10",
-      notes: "Working professional. Quiet tenant.",
-      createdAt: "2024-01-05T09:00:00Z",
-      updatedAt: "2024-03-10T16:00:00Z",
-    },
-    {
-      id: 3,
-      room: "302",
-      tenant: "Amit Patel",
-      email: "amit.patel@example.com",
-      phone: "+91 98765 43212",
-      startDate: "2024-04-01",
-      endDate: "2024-10-01",
-      status: "Upcoming",
-      monthlyRent: 5500,
-      securityDeposit: 11000,
-      advance: 5500,
-      payments: [
-        {
-          id: "p7",
-          amount: 5500,
-          date: "2024-03-20",
-          method: "UPI",
-          status: "Paid",
-          receiptNumber: "RCP003",
-          notes: "Advance payment",
-        },
-      ],
-      emergencyContact: {
-        name: "Kiran Patel",
-        phone: "+91 98765 22222",
-        relation: "Mother",
-      },
-      notes: "Student. Move-in scheduled for April 1st.",
-      createdAt: "2024-03-15T11:00:00Z",
-      updatedAt: "2024-03-20T10:00:00Z",
-    },
-  ]);
+  const { selectedPG, bookings: allBookings } = usePGContext();
 
-  // Dialog states
-  const [isFormDialogOpen, setIsFormDialogOpen] = useState(false);
-  const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
-  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
-  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
-  const [editingBooking, setEditingBooking] = useState<Booking | undefined>(undefined);
-
-  // Filter states
-  const [searchTerm, setSearchTerm] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [paymentStatusFilter, setPaymentStatusFilter] = useState("all");
-
-  // Filtered bookings
-  const filteredBookings = useMemo(() => {
-    return bookings.filter((booking) => {
-      // Search filter
-      const searchLower = searchTerm.toLowerCase();
-      const matchesSearch =
-        !searchTerm ||
-        booking.room.toLowerCase().includes(searchLower) ||
-        booking.tenant.toLowerCase().includes(searchLower) ||
-        booking.email?.toLowerCase().includes(searchLower) ||
-        booking.phone?.toLowerCase().includes(searchLower);
-
-      // Status filter
-      const matchesStatus = statusFilter === "all" || booking.status === statusFilter;
-
-      // Payment status filter
-      let matchesPaymentStatus = true;
-      if (paymentStatusFilter !== "all") {
-        const hasPaymentStatus = booking.payments.some(
-          (p) => p.status === paymentStatusFilter
-        );
-        matchesPaymentStatus = hasPaymentStatus;
-      }
-
-      return matchesSearch && matchesStatus && matchesPaymentStatus;
-    });
-  }, [bookings, searchTerm, statusFilter, paymentStatusFilter]);
-
-  // Statistics
-  const stats = useMemo(() => {
-    const active = bookings.filter((b) => b.status === "Active").length;
-    const totalRevenue = bookings.reduce((sum, booking) => {
-      const paid = booking.payments
-        .filter((p) => p.status === "Paid")
-        .reduce((s, p) => s + p.amount, 0);
-      return sum + paid;
-    }, 0);
-    const pendingPayments = bookings.filter((b) =>
-      b.payments.some((p) => p.status === "Pending" || p.status === "Overdue")
-    ).length;
-
-    return { active, totalRevenue, pendingPayments };
-  }, [bookings]);
+  // Filter bookings for selected PG
+  const bookings = useMemo(() =>
+    allBookings.filter(booking => booking.pgId === selectedPG?.id),
+    [allBookings, selectedPG]
+  );
 
   const getStatusColor = (status: string) => {
     const colors: Record<string, string> = {
@@ -314,7 +134,9 @@ const Bookings = () => {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Bookings</h1>
-          <p className="text-muted-foreground">Manage current and future bookings</p>
+          <p className="text-muted-foreground">
+            {selectedPG ? `${selectedPG.name} - ${bookings.length} bookings` : 'Select a property to view bookings'}
+          </p>
         </div>
         <Button onClick={() => setIsFormDialogOpen(true)}>
           <Plus className="h-4 w-4 mr-2" />

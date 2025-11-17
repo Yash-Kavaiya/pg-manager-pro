@@ -1,14 +1,39 @@
+import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DollarSign } from "lucide-react";
+import { usePGContext } from "@/context/PGContext";
 
 const Payments = () => {
-  const payments = [
-    { id: 1, tenant: "Rajesh Kumar", room: "101", amount: 8000, dueDate: "2024-02-01", status: "Paid", paidDate: "2024-01-28" },
-    { id: 2, tenant: "Priya Sharma", room: "205", amount: 12000, dueDate: "2024-02-05", status: "Pending", paidDate: null },
-    { id: 3, tenant: "Amit Patel", room: "302", amount: 13000, dueDate: "2024-02-10", status: "Overdue", paidDate: null },
-  ];
+  const { selectedPG, payments: allPayments } = usePGContext();
+
+  // Filter payments for selected PG
+  const payments = useMemo(() =>
+    allPayments.filter(payment => payment.pgId === selectedPG?.id),
+    [allPayments, selectedPG]
+  );
+
+  // Calculate payment stats
+  const totalCollected = useMemo(() =>
+    payments
+      .filter(p => p.status === "Paid")
+      .reduce((sum, p) => sum + p.amount, 0),
+    [payments]
+  );
+
+  const pendingPayments = useMemo(() =>
+    payments.filter(p => p.status === "Pending"),
+    [payments]
+  );
+
+  const overduePayments = useMemo(() =>
+    payments.filter(p => p.status === "Overdue"),
+    [payments]
+  );
+
+  const totalPending = pendingPayments.reduce((sum, p) => sum + p.amount, 0);
+  const totalOverdue = overduePayments.reduce((sum, p) => sum + p.amount, 0);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -23,7 +48,9 @@ const Payments = () => {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-foreground">Payment Management</h1>
-        <p className="text-muted-foreground">Track rent and deposit payments</p>
+        <p className="text-muted-foreground">
+          {selectedPG ? `${selectedPG.name} - Payment tracking` : 'Select a property to view payments'}
+        </p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
@@ -32,8 +59,8 @@ const Payments = () => {
             <CardTitle className="text-sm font-medium text-muted-foreground">Total Collected</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-success">₹2,45,000</div>
-            <p className="text-xs text-muted-foreground mt-1">This month</p>
+            <div className="text-2xl font-bold text-success">₹{totalCollected.toLocaleString('en-IN')}</div>
+            <p className="text-xs text-muted-foreground mt-1">Paid payments</p>
           </CardContent>
         </Card>
         <Card>
@@ -41,8 +68,8 @@ const Payments = () => {
             <CardTitle className="text-sm font-medium text-muted-foreground">Pending</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-warning">₹25,000</div>
-            <p className="text-xs text-muted-foreground mt-1">2 payments</p>
+            <div className="text-2xl font-bold text-warning">₹{totalPending.toLocaleString('en-IN')}</div>
+            <p className="text-xs text-muted-foreground mt-1">{pendingPayments.length} payments</p>
           </CardContent>
         </Card>
         <Card>
@@ -50,8 +77,8 @@ const Payments = () => {
             <CardTitle className="text-sm font-medium text-muted-foreground">Overdue</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-destructive">₹13,000</div>
-            <p className="text-xs text-muted-foreground mt-1">1 payment</p>
+            <div className="text-2xl font-bold text-destructive">₹{totalOverdue.toLocaleString('en-IN')}</div>
+            <p className="text-xs text-muted-foreground mt-1">{overduePayments.length} payments</p>
           </CardContent>
         </Card>
       </div>
