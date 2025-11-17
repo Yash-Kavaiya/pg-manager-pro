@@ -8,6 +8,7 @@ import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import Rooms from "./pages/Rooms";
 import Bookings from "./pages/Bookings";
+import Calendar from "./pages/Calendar";
 import Payments from "./pages/Payments";
 import Tenants from "./pages/Tenants";
 import Layout from "./components/Layout";
@@ -30,6 +31,7 @@ const App = () => (
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/rooms" element={<Rooms />} />
               <Route path="/bookings" element={<Bookings />} />
+              <Route path="/calendar" element={<Calendar />} />
               <Route path="/payments" element={<Payments />} />
               <Route path="/tenants" element={<Tenants />} />
             </Route>

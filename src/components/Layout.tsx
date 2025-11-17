@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
-import { Building2, LayoutDashboard, Bed, Calendar, DollarSign, Users, LogOut } from "lucide-react";
+import { Building2, LayoutDashboard, Bed, Calendar, CalendarDays, DollarSign, Users, LogOut, BookOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PGSelector } from "@/components/PGSelector";
 
@@ -9,7 +9,8 @@ const Layout = () => {
   const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
     { icon: Bed, label: "Rooms", path: "/rooms" },
-    { icon: Calendar, label: "Bookings", path: "/bookings" },
+    { icon: BookOpen, label: "Bookings", path: "/bookings" },
+    { icon: CalendarDays, label: "Calendar", path: "/calendar" },
     { icon: DollarSign, label: "Payments", path: "/payments" },
     { icon: Users, label: "Tenants", path: "/tenants" },
   ];
