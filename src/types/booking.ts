@@ -14,6 +14,7 @@ export interface Payment {
 
 export interface Booking {
   id: number;
+  pgId: string;
   room: string;
   tenant: string;
   email?: string;
