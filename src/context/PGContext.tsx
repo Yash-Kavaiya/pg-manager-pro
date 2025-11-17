@@ -16,6 +16,10 @@ interface PGContextType {
   setBookings: (bookings: Booking[]) => void;
   payments: Payment[];
   setPayments: (payments: Payment[]) => void;
+  // Payment CRUD operations
+  addPayment: (payment: Omit<Payment, 'id' | 'createdAt' | 'updatedAt'>) => void;
+  updatePayment: (id: number, payment: Partial<Payment>) => void;
+  deletePayment: (id: number) => void;
 }
 
 const PGContext = createContext<PGContextType | undefined>(undefined);
@@ -57,6 +61,30 @@ export const PGProvider: React.FC<PGProviderProps> = ({ children }) => {
     localStorage.setItem('selectedPGId', pg.id);
   };
 
+  // Payment CRUD operations
+  const addPayment = (payment: Omit<Payment, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const now = new Date().toISOString();
+    const newPayment: Payment = {
+      ...payment,
+      id: Math.max(...payments.map(p => p.id), 0) + 1,
+      createdAt: now,
+      updatedAt: now,
+    };
+    setPayments([...payments, newPayment]);
+  };
+
+  const updatePayment = (id: number, updatedPayment: Partial<Payment>) => {
+    setPayments(payments.map(payment =>
+      payment.id === id
+        ? { ...payment, ...updatedPayment, updatedAt: new Date().toISOString() }
+        : payment
+    ));
+  };
+
+  const deletePayment = (id: number) => {
+    setPayments(payments.filter(payment => payment.id !== id));
+  };
+
   const value: PGContextType = {
     selectedPG,
     setSelectedPG,
@@ -70,6 +98,9 @@ export const PGProvider: React.FC<PGProviderProps> = ({ children }) => {
     setBookings,
     payments,
     setPayments,
+    addPayment,
+    updatePayment,
+    deletePayment,
   };
 
   return <PGContext.Provider value={value}>{children}</PGContext.Provider>;
