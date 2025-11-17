@@ -42,15 +42,29 @@ export interface Booking {
   status: "Active" | "Upcoming" | "Completed";
 }
 
+export type PaymentMethod = "Cash" | "UPI" | "Bank Transfer" | "Card" | "Cheque" | "Online";
+export type PaymentStatus = "Paid" | "Pending" | "Overdue" | "Partial";
+export type PaymentType = "Rent" | "Security Deposit" | "Advance" | "Maintenance" | "Electricity" | "Water" | "Other";
+
 export interface Payment {
   id: number;
   pgId: string;  // Added to link payment to specific PG
   tenant: string;
+  tenantId?: number;
   room: string;
   amount: number;
   dueDate: string;
-  status: "Paid" | "Pending" | "Overdue";
+  status: PaymentStatus;
   paidDate: string | null;
+  paymentMethod?: PaymentMethod;
+  paymentType: PaymentType;
+  receiptNumber?: string;
+  transactionId?: string;
+  notes?: string;
+  late_fee?: number;
+  discount?: number;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface PGOwner {
