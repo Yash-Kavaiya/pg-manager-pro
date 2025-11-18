@@ -67,3 +67,25 @@ export interface PGOwner {
   phone: string;
   pgs: PG[];
 }
+
+export interface NotificationPreferences {
+  id: string;
+  pgId: string;
+  emailEnabled: boolean;
+  smsEnabled: boolean;
+  daysBefore: number;
+  sendOverdueReminders: boolean;
+  reminderTime?: string; // HH:mm format, e.g., "09:00"
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface NotificationLog {
+  id: number;
+  paymentId: number;
+  tenantId: number;
+  type: "email" | "sms";
+  status: "sent" | "failed" | "pending";
+  sentAt?: string;
+  error?: string;
+}

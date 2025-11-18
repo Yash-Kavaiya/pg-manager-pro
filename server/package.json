@@ -1,0 +1,24 @@
+{
+  "name": "pg-manager-pro-server",
+  "version": "1.0.0",
+  "description": "Backend server for PG Manager Pro with automated payment reminders",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "scheduler": "node src/jobs/reminderScheduler.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "nodemailer": "^6.9.7",
+    "twilio": "^4.19.0",
+    "node-cron": "^3.0.3",
+    "date-fns": "^3.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}
