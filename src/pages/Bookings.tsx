@@ -34,10 +34,11 @@ import { BookingFormDialog } from "@/components/BookingFormDialog";
 import { BookingDetailsDialog } from "@/components/BookingDetailsDialog";
 import { BookingFilters } from "@/components/BookingFilters";
 import { AddPaymentDialog } from "@/components/AddPaymentDialog";
+import { QuickBookingCard } from "@/components/QuickBookingCard";
 import { Booking, BookingStatus, Payment } from "@/types/booking";
 
 const Bookings = () => {
-  const { selectedPG, bookings: allBookings, setBookings } = usePGContext();
+  const { selectedPG, bookings: allBookings, addBooking, updateBooking, deleteBooking } = usePGContext();
 
   // Dialog states
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -118,47 +119,32 @@ const Bookings = () => {
   const handleAddBooking = (bookingData: Partial<Booking>) => {
     if (!selectedPG) return;
 
-    const newBooking: Booking = {
-      id: Math.max(...allBookings.map(b => b.id), 0) + 1,
+    const booking = {
       pgId: selectedPG.id,
       ...bookingData,
-      payments: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    } as Booking;
+      payments: bookingData.payments || [],
+    } as Omit<Booking, 'id' | 'createdAt' | 'updatedAt'>;
 
-    setBookings([...allBookings, newBooking]);
+    addBooking(booking);
   };
 
   const handleEditBooking = (bookingData: Partial<Booking>) => {
     if (!selectedBooking) return;
 
-    const updatedBookings = allBookings.map(booking =>
-      booking.id === selectedBooking.id
-        ? { ...booking, ...bookingData, updatedAt: new Date().toISOString() }
-        : booking
-    );
-
-    setBookings(updatedBookings);
+    updateBooking(selectedBooking.id, bookingData);
     setSelectedBooking(null);
   };
 
   const handleDeleteBooking = () => {
     if (!selectedBooking) return;
 
-    const updatedBookings = allBookings.filter(booking => booking.id !== selectedBooking.id);
-    setBookings(updatedBookings);
+    deleteBooking(selectedBooking.id);
     setIsDeleteDialogOpen(false);
     setSelectedBooking(null);
   };
 
   const handleCancelBooking = (booking: Booking) => {
-    const updatedBookings = allBookings.map(b =>
-      b.id === booking.id
-        ? { ...b, status: "Cancelled" as BookingStatus, updatedAt: new Date().toISOString() }
-        : b
-    );
-    setBookings(updatedBookings);
+    updateBooking(booking.id, { status: "Cancelled" as BookingStatus });
   };
 
   const handleAddPayment = (payment: Omit<Payment, "id">) => {
@@ -169,17 +155,9 @@ const Bookings = () => {
       id: `payment-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
     };
 
-    const updatedBookings = allBookings.map(booking =>
-      booking.id === selectedBooking.id
-        ? {
-            ...booking,
-            payments: [...booking.payments, newPayment],
-            updatedAt: new Date().toISOString(),
-          }
-        : booking
-    );
-
-    setBookings(updatedBookings);
+    updateBooking(selectedBooking.id, {
+      payments: [...selectedBooking.payments, newPayment],
+    });
     setSelectedBooking(null);
   };
 
@@ -239,67 +217,75 @@ const Bookings = () => {
         </Button>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Total Bookings
-            </CardTitle>
-            <Calendar className="h-5 w-5 text-primary" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.total}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              All bookings for this property
-            </p>
-          </CardContent>
-        </Card>
+      {/* Stats and Quick Booking */}
+      <div className="grid gap-4 lg:grid-cols-[1fr,320px]">
+        {/* Stats Cards */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Total Bookings
+              </CardTitle>
+              <Calendar className="h-5 w-5 text-primary" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.total}</div>
+              <p className="text-xs text-muted-foreground mt-1">
+                All bookings for this property
+              </p>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Active Bookings
-            </CardTitle>
-            <Users className="h-5 w-5 text-success" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.active}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Currently occupied rooms
-            </p>
-          </CardContent>
-        </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Active Bookings
+              </CardTitle>
+              <Users className="h-5 w-5 text-success" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.active}</div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Currently occupied rooms
+              </p>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Upcoming Bookings
-            </CardTitle>
-            <TrendingUp className="h-5 w-5 text-accent" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.upcoming}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Future check-ins
-            </p>
-          </CardContent>
-        </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Upcoming Bookings
+              </CardTitle>
+              <TrendingUp className="h-5 w-5 text-accent" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.upcoming}</div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Future check-ins
+              </p>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">
-              Pending Bookings
-            </CardTitle>
-            <Calendar className="h-5 w-5 text-yellow-600" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{stats.pending}</div>
-            <p className="text-xs text-muted-foreground mt-1">
-              Awaiting confirmation
-            </p>
-          </CardContent>
-        </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium text-muted-foreground">
+                Pending Bookings
+              </CardTitle>
+              <Calendar className="h-5 w-5 text-yellow-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{stats.pending}</div>
+              <p className="text-xs text-muted-foreground mt-1">
+                Awaiting confirmation
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Quick Booking Card */}
+        <div className="lg:row-span-2">
+          <QuickBookingCard onBookingCreated={handleAddBooking} />
+        </div>
       </div>
 
       {/* Filters */}
