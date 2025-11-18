@@ -28,16 +28,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Calendar, Users, TrendingUp, Plus, MoreVertical, Eye, Pencil, Trash2, DollarSign, IndianRupee } from "lucide-react";
+import { Calendar, Users, TrendingUp, Plus, MoreVertical, Eye, Pencil, Trash2, DollarSign, IndianRupee, CalendarDays, TableIcon } from "lucide-react";
 import { usePGContext } from "@/context/PGContext";
 import { BookingFormDialog } from "@/components/BookingFormDialog";
 import { BookingDetailsDialog } from "@/components/BookingDetailsDialog";
 import { BookingFilters } from "@/components/BookingFilters";
 import { AddPaymentDialog } from "@/components/AddPaymentDialog";
+import BookingCalendar from "@/components/BookingCalendar";
 import { Booking, BookingStatus, Payment } from "@/types/booking";
 
 const Bookings = () => {
   const { selectedPG, bookings: allBookings, setBookings } = usePGContext();
+
+  // View mode state
+  const [viewMode, setViewMode] = useState<"table" | "calendar">("table");
 
   // Dialog states
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
@@ -233,10 +237,32 @@ const Bookings = () => {
             {selectedPG ? `${selectedPG.name} - Manage your bookings` : 'Select a property to view bookings'}
           </p>
         </div>
-        <Button onClick={openAddDialog} disabled={!selectedPG}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Booking
-        </Button>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center border rounded-lg">
+            <Button
+              variant={viewMode === "table" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode("table")}
+              className="rounded-r-none"
+            >
+              <TableIcon className="h-4 w-4 mr-2" />
+              Table
+            </Button>
+            <Button
+              variant={viewMode === "calendar" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode("calendar")}
+              className="rounded-l-none"
+            >
+              <CalendarDays className="h-4 w-4 mr-2" />
+              Calendar
+            </Button>
+          </div>
+          <Button onClick={openAddDialog} disabled={!selectedPG}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Booking
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -302,23 +328,41 @@ const Bookings = () => {
         </Card>
       </div>
 
-      {/* Filters */}
-      <BookingFilters
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        statusFilter={statusFilter}
-        onStatusFilterChange={setStatusFilter}
-        paymentStatusFilter={paymentStatusFilter}
-        onPaymentStatusFilterChange={setPaymentStatusFilter}
-        onClearFilters={clearFilters}
-      />
+      {/* Filters - Only show in table view */}
+      {viewMode === "table" && (
+        <BookingFilters
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          statusFilter={statusFilter}
+          onStatusFilterChange={setStatusFilter}
+          paymentStatusFilter={paymentStatusFilter}
+          onPaymentStatusFilterChange={setPaymentStatusFilter}
+          onClearFilters={clearFilters}
+        />
+      )}
 
-      {/* Bookings Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>All Bookings ({bookings.length})</CardTitle>
-        </CardHeader>
-        <CardContent>
+      {/* Calendar View */}
+      {viewMode === "calendar" && selectedPG && (
+        <BookingCalendar
+          bookings={bookings}
+          onCreateBooking={(date) => {
+            // Pre-fill the date in the booking form
+            setIsAddDialogOpen(true);
+            // Store the selected date for pre-filling (we'll handle this in the form)
+          }}
+          onBookingClick={(booking) => {
+            openViewDialog(booking);
+          }}
+        />
+      )}
+
+      {/* Bookings Table - Only show in table view */}
+      {viewMode === "table" && (
+        <Card>
+          <CardHeader>
+            <CardTitle>All Bookings ({bookings.length})</CardTitle>
+          </CardHeader>
+          <CardContent>
           {bookings.length > 0 ? (
             <div className="overflow-x-auto">
               <Table>
@@ -455,8 +499,9 @@ const Bookings = () => {
               )}
             </div>
           )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Add/Edit Booking Dialog */}
       <BookingFormDialog
