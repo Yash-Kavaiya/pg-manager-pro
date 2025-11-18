@@ -32,15 +32,8 @@ export interface Tenant {
   joinDate: string;
 }
 
-export interface Booking {
-  id: number;
-  pgId: string;  // Added to link booking to specific PG
-  room: string;
-  tenant: string;
-  startDate: string;
-  endDate: string;
-  status: "Active" | "Upcoming" | "Completed";
-}
+// Re-export Booking types from booking.ts to avoid duplication
+export type { Booking, BookingStatus, BookingFilters } from "./booking";
 
 export type PaymentMethod = "Cash" | "UPI" | "Bank Transfer" | "Card" | "Cheque" | "Online";
 export type PaymentStatus = "Paid" | "Pending" | "Overdue" | "Partial";

@@ -35,6 +35,7 @@ import { BookingDetailsDialog } from "@/components/BookingDetailsDialog";
 import { BookingFilters } from "@/components/BookingFilters";
 import { AddPaymentDialog } from "@/components/AddPaymentDialog";
 import BookingCalendar from "@/components/BookingCalendar";
+import { QuickBookingCard } from "@/components/QuickBookingCard";
 import { Booking, BookingStatus, Payment } from "@/types/booking";
 
 const Bookings = () => {
@@ -409,7 +410,7 @@ const Bookings = () => {
                               <IndianRupee className="h-3 w-3 mr-1" />
                               <span className="font-medium">{totalPaid.toLocaleString()}</span>
                             </div>
-                            <Badge className={getPaymentStatusColor(paymentStatus)} variant="outline" size="sm">
+                            <Badge className={getPaymentStatusColor(paymentStatus)} variant="outline">
                               {paymentStatus}
                             </Badge>
                           </div>
