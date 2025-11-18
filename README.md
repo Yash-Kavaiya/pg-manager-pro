@@ -60,6 +60,49 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
+## New Feature: Automated Rent Payment Reminders
+
+PG Manager Pro now includes an automated notification system that sends rent payment reminders via email and SMS!
+
+### Features
+
+- **Email & SMS Notifications**: Send automated reminders to tenants when payments are due
+- **Configurable Schedule**: Set how many days before due date to send reminders
+- **Overdue Alerts**: Automatic notifications for overdue payments
+- **Beautiful Email Templates**: Professional HTML emails with payment details
+- **Settings UI**: Easy-to-use interface for configuring notification preferences
+- **Manual Testing**: Test notifications with a single click
+
+### Quick Start
+
+1. **Install backend dependencies**:
+   ```bash
+   cd server
+   npm install
+   ```
+
+2. **Configure environment**:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your email and SMS credentials
+   ```
+
+3. **Start the backend server**:
+   ```bash
+   npm run dev
+   ```
+
+4. **Access Settings**:
+   - Open the application
+   - Navigate to Settings → Notifications tab
+   - Configure your preferences
+   - Click "Test Reminders Now" to verify
+
+### Full Documentation
+
+For detailed setup instructions, configuration options, and troubleshooting, see:
+[RENT_REMINDERS_SETUP.md](./RENT_REMINDERS_SETUP.md)
+
 ## How can I deploy this project?
 
 Simply open [Lovable](https://lovable.dev/projects/47d48dec-f8bb-4e1a-b264-c853b8788f26) and click on Share -> Publish.

@@ -1,17 +1,18 @@
 import { Outlet, Link, useLocation } from "react-router-dom";
-import { Building2, LayoutDashboard, Bed, Calendar, DollarSign, Users, LogOut } from "lucide-react";
+import { Building2, LayoutDashboard, Bed, Calendar, DollarSign, Users, Settings as SettingsIcon, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PGSelector } from "@/components/PGSelector";
 
 const Layout = () => {
   const location = useLocation();
-  
+
   const menuItems = [
     { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
     { icon: Bed, label: "Rooms", path: "/rooms" },
     { icon: Calendar, label: "Bookings", path: "/bookings" },
     { icon: DollarSign, label: "Payments", path: "/payments" },
     { icon: Users, label: "Tenants", path: "/tenants" },
+    { icon: SettingsIcon, label: "Settings", path: "/settings" },
   ];
 
   const isActive = (path: string) => location.pathname === path;

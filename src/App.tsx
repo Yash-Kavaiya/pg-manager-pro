@@ -10,6 +10,7 @@ import Rooms from "./pages/Rooms";
 import Bookings from "./pages/Bookings";
 import Payments from "./pages/Payments";
 import Tenants from "./pages/Tenants";
+import Settings from "./pages/Settings";
 import Layout from "./components/Layout";
 import NotFound from "./pages/NotFound";
 import { PGProvider } from "./context/PGContext";
@@ -32,6 +33,7 @@ const App = () => (
               <Route path="/bookings" element={<Bookings />} />
               <Route path="/payments" element={<Payments />} />
               <Route path="/tenants" element={<Tenants />} />
+              <Route path="/settings" element={<Settings />} />
             </Route>
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
