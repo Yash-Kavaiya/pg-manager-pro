@@ -16,6 +16,10 @@ interface PGContextType {
   setBookings: (bookings: Booking[]) => void;
   payments: Payment[];
   setPayments: (payments: Payment[]) => void;
+  // Booking CRUD operations
+  addBooking: (booking: Omit<Booking, 'id' | 'createdAt' | 'updatedAt'>) => Booking;
+  updateBooking: (id: number, booking: Partial<Booking>) => void;
+  deleteBooking: (id: number) => void;
   // Payment CRUD operations
   addPayment: (payment: Omit<Payment, 'id' | 'createdAt' | 'updatedAt'>) => void;
   updatePayment: (id: number, payment: Partial<Payment>) => void;
@@ -61,6 +65,31 @@ export const PGProvider: React.FC<PGProviderProps> = ({ children }) => {
     localStorage.setItem('selectedPGId', pg.id);
   };
 
+  // Booking CRUD operations
+  const addBooking = (booking: Omit<Booking, 'id' | 'createdAt' | 'updatedAt'>) => {
+    const now = new Date().toISOString();
+    const newBooking: Booking = {
+      ...booking,
+      id: Math.max(...bookings.map(b => b.id), 0) + 1,
+      createdAt: now,
+      updatedAt: now,
+    };
+    setBookings([...bookings, newBooking]);
+    return newBooking;
+  };
+
+  const updateBooking = (id: number, updatedBooking: Partial<Booking>) => {
+    setBookings(bookings.map(booking =>
+      booking.id === id
+        ? { ...booking, ...updatedBooking, updatedAt: new Date().toISOString() }
+        : booking
+    ));
+  };
+
+  const deleteBooking = (id: number) => {
+    setBookings(bookings.filter(booking => booking.id !== id));
+  };
+
   // Payment CRUD operations
   const addPayment = (payment: Omit<Payment, 'id' | 'createdAt' | 'updatedAt'>) => {
     const now = new Date().toISOString();
@@ -98,6 +127,9 @@ export const PGProvider: React.FC<PGProviderProps> = ({ children }) => {
     setBookings,
     payments,
     setPayments,
+    addBooking,
+    updateBooking,
+    deleteBooking,
     addPayment,
     updatePayment,
     deletePayment,
