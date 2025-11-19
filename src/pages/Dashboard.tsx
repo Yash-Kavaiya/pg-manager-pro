@@ -1,149 +1,206 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Building2, Users, DollarSign, Calendar } from "lucide-react";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { ArrowUpRight, ArrowDownRight, Users, Home, IndianRupee, Activity } from "lucide-react";
 import { usePGContext } from "@/context/PGContext";
-import { useMemo } from "react";
 
 const Dashboard = () => {
-  const { selectedPG, rooms, bookings, payments, tenants } = usePGContext();
-
-  // Filter data for selected PG
-  const filteredRooms = useMemo(() =>
-    rooms.filter(room => room.pgId === selectedPG?.id),
-    [rooms, selectedPG]
-  );
-
-  const filteredBookings = useMemo(() =>
-    bookings.filter(booking => booking.pgId === selectedPG?.id),
-    [bookings, selectedPG]
-  );
-
-  const filteredPayments = useMemo(() =>
-    payments.filter(payment => payment.pgId === selectedPG?.id),
-    [payments, selectedPG]
-  );
-
-  const filteredTenants = useMemo(() =>
-    tenants.filter(tenant => tenant.pgId === selectedPG?.id),
-    [tenants, selectedPG]
-  );
-
-  // Calculate stats
-  const totalRooms = filteredRooms.length;
-  const occupiedRooms = filteredRooms.filter(room => room.status === "Occupied").length;
-  const occupancyRate = totalRooms > 0 ? Math.round((occupiedRooms / totalRooms) * 100) : 0;
-
-  const totalRevenue = filteredRooms
-    .filter(room => room.status === "Occupied")
-    .reduce((sum, room) => sum + room.rent, 0);
-
-  const pendingPayments = filteredPayments
-    .filter(payment => payment.status === "Pending" || payment.status === "Overdue")
-    .reduce((sum, payment) => sum + payment.amount, 0);
-
-  const tenantsInNoticePeriod = filteredTenants.filter(
-    tenant => tenant.status === "Notice Period"
-  ).length;
+  const { selectedPG } = usePGContext();
 
   const stats = [
     {
-      title: "Total Rooms",
-      value: totalRooms.toString(),
-      subtitle: `${occupiedRooms} Occupied`,
-      icon: Building2,
-      color: "text-primary"
+      title: "Total Revenue",
+      value: "₹45,231",
+      change: "+20.1% from last month",
+      icon: IndianRupee,
+      trend: "up",
+      color: "text-emerald-500",
+      bg: "bg-emerald-500/10",
     },
     {
       title: "Occupancy Rate",
-      value: `${occupancyRate}%`,
-      subtitle: `${totalRooms - occupiedRooms} Available`,
+      value: "85%",
+      change: "+4% from last month",
       icon: Users,
-      color: "text-accent"
+      trend: "up",
+      color: "text-blue-500",
+      bg: "bg-blue-500/10",
     },
     {
-      title: "Monthly Revenue",
-      value: `₹${totalRevenue.toLocaleString('en-IN')}`,
-      subtitle: `₹${pendingPayments.toLocaleString('en-IN')} pending`,
-      icon: DollarSign,
-      color: "text-success"
+      title: "Active Rooms",
+      value: "12",
+      change: "-2 from last month",
+      icon: Home,
+      trend: "down",
+      color: "text-orange-500",
+      bg: "bg-orange-500/10",
     },
     {
-      title: "Notice Period",
-      value: tenantsInNoticePeriod.toString(),
-      subtitle: "Tenants leaving soon",
-      icon: Calendar,
-      color: "text-warning"
-    }
+      title: "Pending Dues",
+      value: "₹12,450",
+      change: "+15% from last month",
+      icon: Activity,
+      trend: "down",
+      color: "text-rose-500",
+      bg: "bg-rose-500/10",
+    },
   ];
 
-  // Get recent bookings (last 3)
-  const recentBookings = filteredBookings
-    .sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime())
-    .slice(0, 3);
+  const data = [
+    { name: "Jan", total: 25000 },
+    { name: "Feb", total: 28000 },
+    { name: "Mar", total: 35000 },
+    { name: "Apr", total: 32000 },
+    { name: "May", total: 40000 },
+    { name: "Jun", total: 45000 },
+  ];
+
+  const recentActivity = [
+    {
+      user: "Rahul Sharma",
+      action: "Paid rent for Room 101",
+      time: "2 hours ago",
+      amount: "+₹12,000",
+      initials: "RS",
+    },
+    {
+      user: "Priya Patel",
+      action: "New booking request",
+      time: "4 hours ago",
+      amount: "",
+      initials: "PP",
+    },
+    {
+      user: "Amit Kumar",
+      action: "Reported maintenance issue",
+      time: "5 hours ago",
+      amount: "",
+      initials: "AK",
+    },
+    {
+      user: "Sneha Gupta",
+      action: "Paid security deposit",
+      time: "1 day ago",
+      amount: "+₹15,000",
+      initials: "SG",
+    },
+  ];
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-        <p className="text-muted-foreground">
-          {selectedPG ? `${selectedPG.name} - Overview` : 'Select a property to view dashboard'}
-        </p>
+    <div className="space-y-8 animate-in fade-in duration-500">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight text-foreground">Dashboard</h2>
+          <p className="text-muted-foreground mt-1">
+            Overview for {selectedPG?.name || "All Properties"}
+          </p>
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat) => {
+        {stats.map((stat, index) => {
           const Icon = stat.icon;
           return (
-            <Card key={stat.title}>
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <Card key={index} className="glass-card border-none shadow-lg hover:shadow-xl transition-all duration-300">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium text-muted-foreground">
                   {stat.title}
                 </CardTitle>
-                <Icon className={`h-5 w-5 ${stat.color}`} />
+                <div className={`p-2 rounded-full ${stat.bg}`}>
+                  <Icon className={`h-4 w-4 ${stat.color}`} />
+                </div>
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{stat.value}</div>
-                <p className="text-xs text-muted-foreground mt-1">{stat.subtitle}</p>
+                <div className="flex items-center text-xs text-muted-foreground mt-1">
+                  {stat.trend === "up" ? (
+                    <ArrowUpRight className="mr-1 h-4 w-4 text-emerald-500" />
+                  ) : (
+                    <ArrowDownRight className="mr-1 h-4 w-4 text-rose-500" />
+                  )}
+                  <span className={stat.trend === "up" ? "text-emerald-500" : "text-rose-500"}>
+                    {stat.change}
+                  </span>
+                </div>
               </CardContent>
             </Card>
           );
         })}
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Bookings</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {recentBookings.length > 0 ? (
-              recentBookings.map((booking) => (
-                <div key={booking.id} className="flex items-center justify-between border-b pb-3 last:border-0">
-                  <div>
-                    <p className="font-medium">{booking.tenant}</p>
-                    <p className="text-sm text-muted-foreground">Room {booking.room}</p>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <Card className="col-span-4 glass-card border-none shadow-lg">
+          <CardHeader>
+            <CardTitle>Revenue Overview</CardTitle>
+          </CardHeader>
+          <CardContent className="pl-2">
+            <div className="h-[350px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={data}>
+                  <CartesianGrid strokeDasharray="3 3" className="stroke-muted/20" />
+                  <XAxis
+                    dataKey="name"
+                    stroke="#888888"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    stroke="#888888"
+                    fontSize={12}
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => `₹${value}`}
+                  />
+                  <Tooltip
+                    cursor={{ fill: 'transparent' }}
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: 'var(--radius)',
+                    }}
+                    formatter={(value) => [`₹${value}`, "Revenue"]}
+                  />
+                  <Bar
+                    dataKey="total"
+                    fill="hsl(var(--primary))"
+                    radius={[4, 4, 0, 0]}
+                    className="fill-primary hover:fill-primary/80 transition-colors"
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="col-span-3 glass-card border-none shadow-lg">
+          <CardHeader>
+            <CardTitle>Recent Activity</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-8">
+              {recentActivity.map((item, index) => (
+                <div key={index} className="flex items-center group">
+                  <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-medium group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                    {item.initials}
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm">{booking.startDate}</p>
-                    <span className={`text-xs px-2 py-1 rounded-full ${
-                      booking.status === "Active"
-                        ? "bg-success/10 text-success"
-                        : booking.status === "Upcoming"
-                        ? "bg-warning/10 text-warning"
-                        : "bg-muted text-muted-foreground"
-                    }`}>
-                      {booking.status}
-                    </span>
+                  <div className="ml-4 space-y-1">
+                    <p className="text-sm font-medium leading-none">{item.user}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {item.action}
+                    </p>
+                  </div>
+                  <div className="ml-auto font-medium text-sm">
+                    {item.amount ? (
+                      <span className="text-emerald-500">{item.amount}</span>
+                    ) : (
+                      <span className="text-muted-foreground">{item.time}</span>
+                    )}
                   </div>
                 </div>
-              ))
-            ) : (
-              <p className="text-sm text-muted-foreground text-center py-4">
-                No bookings found for this property
-              </p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

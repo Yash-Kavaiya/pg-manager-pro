@@ -1,37 +1,15 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Plus, Bed, Users, DollarSign, Eye, Pencil, Trash2, Search } from "lucide-react";
+import { Plus, Search, Bed, Users, IndianRupee, Eye, Pencil, Trash2 } from "lucide-react";
 import { usePGContext } from "@/context/PGContext";
 import { Room } from "@/types";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 const Rooms = () => {
   const { selectedPG, rooms: allRooms, setRooms } = usePGContext();
@@ -55,35 +33,22 @@ const Rooms = () => {
   });
 
   // Filter rooms for selected PG
-  const rooms = useMemo(() => {
-    let filtered = allRooms.filter(room => room.pgId === selectedPG?.id);
+  const rooms = allRooms.filter(room => {
+    if (selectedPG && room.pgId !== selectedPG.id) return false;
 
-    // Apply search filter
-    if (searchTerm) {
-      filtered = filtered.filter(room =>
-        room.number.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
+    const matchesSearch = room.number.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === "All" || room.status === statusFilter;
+    const matchesType = typeFilter === "All" || room.type === typeFilter;
 
-    // Apply status filter
-    if (statusFilter !== "All") {
-      filtered = filtered.filter(room => room.status === statusFilter);
-    }
-
-    // Apply type filter
-    if (typeFilter !== "All") {
-      filtered = filtered.filter(room => room.type === typeFilter);
-    }
-
-    return filtered;
-  }, [allRooms, selectedPG, searchTerm, statusFilter, typeFilter]);
+    return matchesSearch && matchesStatus && matchesType;
+  });
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "Available": return "bg-success/10 text-success";
-      case "Occupied": return "bg-primary/10 text-primary";
-      case "Maintenance": return "bg-warning/10 text-warning";
-      default: return "bg-muted text-muted-foreground";
+      case "Available": return "bg-green-500/10 text-green-500 border-green-500/20";
+      case "Occupied": return "bg-blue-500/10 text-blue-500 border-blue-500/20";
+      case "Maintenance": return "bg-orange-500/10 text-orange-500 border-orange-500/20";
+      default: return "bg-secondary text-secondary-foreground";
     }
   };
 
@@ -123,14 +88,14 @@ const Rooms = () => {
     const updatedRooms = allRooms.map(room =>
       room.id === selectedRoom.id
         ? {
-            ...room,
-            number: formData.number,
-            type: formData.type,
-            rent: parseFloat(formData.rent),
-            deposit: parseFloat(formData.deposit),
-            status: formData.status,
-            floor: parseInt(formData.floor),
-          }
+          ...room,
+          number: formData.number,
+          type: formData.type,
+          rent: parseFloat(formData.rent),
+          deposit: parseFloat(formData.deposit),
+          status: formData.status,
+          floor: parseInt(formData.floor),
+        }
         : room
     );
 
@@ -191,7 +156,7 @@ const Rooms = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Room Management</h1>
           <p className="text-muted-foreground">
@@ -204,7 +169,6 @@ const Rooms = () => {
         </Button>
       </div>
 
-      {/* Search and Filter Section */}
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -239,61 +203,61 @@ const Rooms = () => {
         </Select>
       </div>
 
-      {/* Room Cards Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {rooms.map((room) => (
-          <Card key={room.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader>
+          <Card key={room.id} className="glass-card hover:shadow-lg transition-all duration-300 group">
+            <CardHeader className="pb-2">
               <div className="flex justify-between items-start">
                 <div>
-                  <CardTitle className="text-lg">Room {room.number}</CardTitle>
+                  <CardTitle className="text-lg font-bold">Room {room.number}</CardTitle>
                   <p className="text-sm text-muted-foreground">Floor {room.floor}</p>
                 </div>
-                <Badge className={getStatusColor(room.status)}>
+                <Badge variant="outline" className={getStatusColor(room.status)}>
                   {room.status}
                 </Badge>
               </div>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-3 pb-2">
               <div className="flex items-center text-sm">
                 <Bed className="h-4 w-4 mr-2 text-muted-foreground" />
                 <span>{room.type} Occupancy</span>
               </div>
               <div className="flex items-center text-sm">
-                <DollarSign className="h-4 w-4 mr-2 text-muted-foreground" />
+                <IndianRupee className="h-4 w-4 mr-2 text-muted-foreground" />
                 <span>₹{room.rent.toLocaleString()}/month</span>
               </div>
               <div className="flex items-center text-sm">
                 <Users className="h-4 w-4 mr-2 text-muted-foreground" />
                 <span>Deposit: ₹{room.deposit.toLocaleString()}</span>
               </div>
-              <div className="pt-2 flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex-1"
-                  onClick={() => openViewDialog(room)}
-                >
-                  <Eye className="h-3 w-3 mr-1" />
-                  View
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => openEditDialog(room)}
-                >
-                  <Pencil className="h-3 w-3" />
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => openDeleteDialog(room)}
-                  className="text-destructive hover:text-destructive"
-                >
-                  <Trash2 className="h-3 w-3" />
-                </Button>
-              </div>
             </CardContent>
+            <CardFooter className="pt-2 flex gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="flex-1 h-8"
+                onClick={() => openViewDialog(room)}
+              >
+                <Eye className="h-3 w-3 mr-1" />
+                View
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0"
+                onClick={() => openEditDialog(room)}
+              >
+                <Pencil className="h-3 w-3" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                onClick={() => openDeleteDialog(room)}
+              >
+                <Trash2 className="h-3 w-3" />
+              </Button>
+            </CardFooter>
           </Card>
         ))}
       </div>
@@ -302,13 +266,12 @@ const Rooms = () => {
         <div className="text-center py-12">
           <p className="text-muted-foreground">
             {selectedPG
-              ? "No rooms found. Add your first room to get started."
+              ? "No rooms found matching your filters."
               : "Please select a PG property to view rooms."}
           </p>
         </div>
       )}
 
-      {/* Add/Edit Room Dialog */}
       <Dialog open={isAddDialogOpen || isEditDialogOpen} onOpenChange={(open) => {
         if (!open) {
           setIsAddDialogOpen(false);
@@ -423,7 +386,6 @@ const Rooms = () => {
         </DialogContent>
       </Dialog>
 
-      {/* View Room Details Dialog */}
       <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -451,7 +413,7 @@ const Rooms = () => {
                 </div>
                 <div>
                   <Label className="text-muted-foreground">Status</Label>
-                  <Badge className={getStatusColor(selectedRoom.status)}>
+                  <Badge variant="outline" className={getStatusColor(selectedRoom.status)}>
                     {selectedRoom.status}
                   </Badge>
                 </div>
@@ -483,7 +445,6 @@ const Rooms = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
