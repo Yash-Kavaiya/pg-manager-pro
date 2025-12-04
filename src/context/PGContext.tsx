@@ -16,6 +16,10 @@ interface PGContextType {
   setBookings: (bookings: Booking[]) => void;
   payments: Payment[];
   setPayments: (payments: Payment[]) => void;
+  // Tenant CRUD operations
+  addTenant: (tenant: Omit<Tenant, 'id'>) => Tenant;
+  updateTenant: (id: number, tenant: Partial<Tenant>) => void;
+  deleteTenant: (id: number) => void;
   // Booking CRUD operations
   addBooking: (booking: Omit<Booking, 'id' | 'createdAt' | 'updatedAt'>) => Booking;
   updateBooking: (id: number, booking: Partial<Booking>) => void;
@@ -63,6 +67,28 @@ export const PGProvider: React.FC<PGProviderProps> = ({ children }) => {
     setSelectedPGState(pg);
     // Store the selected PG ID in localStorage for persistence
     localStorage.setItem('selectedPGId', pg.id);
+  };
+
+  // Tenant CRUD operations
+  const addTenant = (tenant: Omit<Tenant, 'id'>) => {
+    const newTenant: Tenant = {
+      ...tenant,
+      id: Math.max(...tenants.map(t => t.id), 0) + 1,
+    };
+    setTenants([...tenants, newTenant]);
+    return newTenant;
+  };
+
+  const updateTenant = (id: number, updatedTenant: Partial<Tenant>) => {
+    setTenants(tenants.map(tenant =>
+      tenant.id === id
+        ? { ...tenant, ...updatedTenant }
+        : tenant
+    ));
+  };
+
+  const deleteTenant = (id: number) => {
+    setTenants(tenants.filter(tenant => tenant.id !== id));
   };
 
   // Booking CRUD operations
@@ -127,6 +153,9 @@ export const PGProvider: React.FC<PGProviderProps> = ({ children }) => {
     setBookings,
     payments,
     setPayments,
+    addTenant,
+    updateTenant,
+    deleteTenant,
     addBooking,
     updateBooking,
     deleteBooking,

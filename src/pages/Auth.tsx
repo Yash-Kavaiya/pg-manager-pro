@@ -40,21 +40,25 @@ const Auth = () => {
   return (
     <div className="min-h-screen w-full flex bg-background">
       {/* Left Side - Hero/Branding */}
-      <div className="hidden lg:flex w-1/2 bg-sidebar relative overflow-hidden items-center justify-center p-12">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-20 mix-blend-overlay" />
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/40 to-background/90" />
+      <div className="hidden lg:flex w-1/2 relative overflow-hidden items-center justify-center p-12 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        {/* Subtle pattern overlay */}
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-10" />
+
+        {/* Gradient mesh overlay for depth */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-violet-600/20 via-transparent to-cyan-500/20" />
+        <div className="absolute inset-0 bg-gradient-to-bl from-transparent via-slate-900/50 to-slate-900/80" />
 
         <div className="relative z-10 max-w-lg text-left space-y-8">
-          <div className="h-16 w-16 rounded-2xl bg-primary flex items-center justify-center shadow-2xl shadow-primary/50 mb-8">
-            <Building2 className="h-8 w-8 text-primary-foreground" />
+          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-2xl shadow-violet-500/30 mb-8 ring-1 ring-white/10">
+            <Building2 className="h-8 w-8 text-white" />
           </div>
 
-          <h1 className="text-5xl font-bold tracking-tight text-foreground">
+          <h1 className="text-5xl font-bold tracking-tight text-white">
             Manage your PG <br />
-            <span className="text-primary">Like a Pro.</span>
+            <span className="bg-gradient-to-r from-violet-400 via-purple-400 to-indigo-400 bg-clip-text text-transparent">Like a Pro.</span>
           </h1>
 
-          <p className="text-xl text-muted-foreground leading-relaxed">
+          <p className="text-xl text-slate-300 leading-relaxed">
             Streamline your property management with our all-in-one solution.
             Track payments, manage tenants, and optimize occupancy effortlessly.
           </p>
@@ -66,17 +70,18 @@ const Auth = () => {
               "Real-time Occupancy Tracking",
               "Expense Management"
             ].map((feature, i) => (
-              <div key={i} className="flex items-center gap-3 text-foreground/80">
-                <CheckCircle2 className="h-5 w-5 text-primary" />
+              <div key={i} className="flex items-center gap-3 text-slate-200">
+                <CheckCircle2 className="h-5 w-5 text-emerald-400" />
                 <span className="font-medium">{feature}</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Decorative circles */}
-        <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-primary/20 rounded-full blur-3xl" />
-        <div className="absolute -top-32 -right-32 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl" />
+        {/* Decorative circles with better colors */}
+        <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-violet-600/30 rounded-full blur-3xl" />
+        <div className="absolute -top-32 -right-32 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl" />
       </div>
 
       {/* Right Side - Auth Forms */}
