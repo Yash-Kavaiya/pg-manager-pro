@@ -311,6 +311,118 @@ interface Payment {
 
 ---
 
+## ☁️ Cloud Run Deployment
+
+This project includes automated deployment to Google Cloud Run using GitHub Actions with **Workload Identity Federation (WIF)** - no service account keys required!
+
+### Prerequisites
+
+- Google Cloud SDK installed (`gcloud`)
+- A GCP Project with billing enabled
+- GitHub repository access
+
+### 1. GCP Setup Commands
+
+Run these commands to set up WIF (replace `YOUR_PROJECT_ID` and `YOUR_GITHUB_REPO`):
+
+```bash
+# Set variables
+export PROJECT_ID="YOUR_PROJECT_ID"
+export GITHUB_REPO="Yash-Kavaiya/pg-manager-pro"
+
+# Enable required APIs
+gcloud services enable \
+  iamcredentials.googleapis.com \
+  run.googleapis.com \
+  artifactregistry.googleapis.com \
+  cloudbuild.googleapis.com
+
+# Create Workload Identity Pool
+gcloud iam workload-identity-pools create "github-pool" \
+  --project="${PROJECT_ID}" \
+  --location="global" \
+  --display-name="GitHub Actions Pool"
+
+# Create Workload Identity Provider
+gcloud iam workload-identity-pools providers create-oidc "github-provider" \
+  --project="${PROJECT_ID}" \
+  --location="global" \
+  --workload-identity-pool="github-pool" \
+  --display-name="GitHub Provider" \
+  --attribute-mapping="google.subject=assertion.sub,attribute.actor=assertion.actor,attribute.repository=assertion.repository" \
+  --issuer-uri="https://token.actions.githubusercontent.com"
+
+# Create Service Account
+gcloud iam service-accounts create "github-actions-sa" \
+  --project="${PROJECT_ID}" \
+  --display-name="GitHub Actions Service Account"
+
+# Grant permissions
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+  --member="serviceAccount:github-actions-sa@${PROJECT_ID}.iam.gserviceaccount.com" \
+  --role="roles/run.admin"
+
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+  --member="serviceAccount:github-actions-sa@${PROJECT_ID}.iam.gserviceaccount.com" \
+  --role="roles/artifactregistry.admin"
+
+gcloud projects add-iam-policy-binding "${PROJECT_ID}" \
+  --member="serviceAccount:github-actions-sa@${PROJECT_ID}.iam.gserviceaccount.com" \
+  --role="roles/iam.serviceAccountUser"
+
+# Get Project Number
+PROJECT_NUMBER=$(gcloud projects describe ${PROJECT_ID} --format="value(projectNumber)")
+
+# Allow GitHub to impersonate Service Account
+gcloud iam service-accounts add-iam-policy-binding \
+  "github-actions-sa@${PROJECT_ID}.iam.gserviceaccount.com" \
+  --project="${PROJECT_ID}" \
+  --role="roles/iam.workloadIdentityUser" \
+  --member="principalSet://iam.googleapis.com/projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/github-pool/attribute.repository/${GITHUB_REPO}"
+
+# Create Artifact Registry repository
+gcloud artifacts repositories create "pg-manager-pro" \
+  --repository-format=docker \
+  --location="us-central1" \
+  --description="PG Manager Pro Docker images"
+```
+
+### 2. GitHub Secrets Configuration
+
+Add these secrets in your GitHub repository (Settings → Secrets → Actions):
+
+| Secret Name | Value |
+|-------------|-------|
+| `GCP_PROJECT_ID` | Your GCP project ID |
+| `GCP_WIF_PROVIDER` | `projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/github-pool/providers/github-provider` |
+
+### 3. Deploy
+
+Push to the `main` branch or manually trigger the workflow:
+
+```bash
+git push origin main
+```
+
+The GitHub Action will:
+1. Authenticate using WIF (no keys!)
+2. Build Docker images for frontend and backend
+3. Push to Artifact Registry
+4. Deploy to Cloud Run
+
+### Deployment Architecture
+
+```mermaid
+flowchart LR
+    A[GitHub Push] --> B[GitHub Actions]
+    B --> C[WIF Auth]
+    C --> D[Artifact Registry]
+    D --> E[Cloud Run Frontend]
+    D --> F[Cloud Run Backend]
+```
+
+---
+
 ## 🧪 Testing
 
 The application has been comprehensively tested using Playwright MCP. All test results and screenshots are available in the `test-log/` directory.
