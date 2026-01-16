@@ -146,40 +146,39 @@ flowchart LR
 
 ## 🖼️ Screenshots
 
-<details>
-<summary><b>📋 Authentication</b></summary>
+### 📊 Dashboard
+![Dashboard](test-log/01-dashboard.png)
 
-![Auth Page](docs/images/auth.png)
-</details>
+### 🛏️ Room Management
+![Rooms Page](test-log/02-rooms.png)
 
-<details>
-<summary><b>🛏️ Room Management</b></summary>
+### 📅 Bookings - Table View
+![Bookings Table](test-log/03-bookings.png)
 
-![Rooms Page](docs/images/rooms.png)
-</details>
+### 📅 Bookings - Calendar View
+![Bookings Calendar](test-log/09-bookings-calendar.png)
 
-<details>
-<summary><b>👥 Tenant Management</b></summary>
+### 💰 Payment Management
+![Payments Page](test-log/04-payments.png)
 
-![Tenants Page](docs/images/tenants.png)
-</details>
+### 👥 Tenant Management
+![Tenants Page](test-log/05-tenants.png)
 
-<details>
-<summary><b>📅 Bookings</b></summary>
-
-![Bookings Page](docs/images/bookings.png)
-</details>
+### ⚙️ Settings - Notifications
+![Settings Notifications](test-log/06-settings-notifications.png)
 
 <details>
-<summary><b>💰 Payments</b></summary>
+<summary><b>View More Screenshots</b></summary>
 
-![Payments Page](docs/images/payments.png)
-</details>
+#### Settings - Property
+![Settings Property](test-log/07-settings-property.png)
 
-<details>
-<summary><b>⚙️ Settings</b></summary>
+#### Settings - Account
+![Settings Account](test-log/08-settings-account.png)
 
-![Settings Page](docs/images/settings.png)
+#### Final Dashboard View
+![Final Dashboard](test-log/10-final-dashboard.png)
+
 </details>
 
 ---
@@ -309,6 +308,23 @@ interface Payment {
   method: 'Cash' | 'UPI' | 'Bank Transfer' | 'Card';
 }
 ```
+
+---
+
+## 🧪 Testing
+
+The application has been comprehensively tested using Playwright MCP. All test results and screenshots are available in the `test-log/` directory.
+
+### Test Coverage
+- ✅ Authentication & Login Flow
+- ✅ Dashboard with KPIs and Charts
+- ✅ Room Management (12 rooms)
+- ✅ Booking System (Table & Calendar views)
+- ✅ Payment Tracking
+- ✅ Tenant Management
+- ✅ Settings & Configuration
+
+View the complete test report: [TEST_REPORT.md](test-log/TEST_REPORT.md)
 
 ---
 
