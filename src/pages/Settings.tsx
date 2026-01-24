@@ -1,4 +1,6 @@
 import { NotificationSettings } from "@/components/NotificationSettings";
+import { PropertySettings } from "@/components/PropertySettings";
+import { AccountSettings } from "@/components/AccountSettings";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Bell, Building2, User } from "lucide-react";
@@ -34,35 +36,11 @@ export default function Settings() {
         </TabsContent>
 
         <TabsContent value="property" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Property Settings</CardTitle>
-              <CardDescription>
-                Configure your PG property details and preferences
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Property settings coming soon...
-              </p>
-            </CardContent>
-          </Card>
+          <PropertySettings />
         </TabsContent>
 
         <TabsContent value="account" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Account Settings</CardTitle>
-              <CardDescription>
-                Manage your account information and security
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-muted-foreground">
-                Account settings coming soon...
-              </p>
-            </CardContent>
-          </Card>
+          <AccountSettings />
         </TabsContent>
       </Tabs>
     </div>

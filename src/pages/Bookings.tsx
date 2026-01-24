@@ -35,7 +35,6 @@ import { BookingDetailsDialog } from "@/components/BookingDetailsDialog";
 import { BookingFilters } from "@/components/BookingFilters";
 import { AddPaymentDialog } from "@/components/AddPaymentDialog";
 import BookingCalendar from "@/components/BookingCalendar";
-import { QuickBookingCard } from "@/components/QuickBookingCard";
 import { Booking, BookingStatus, Payment } from "@/types/booking";
 
 const Bookings = () => {
@@ -244,74 +243,66 @@ const Bookings = () => {
       </div>
 
       {/* Stats and Quick Booking */}
-      <div className="grid gap-4 lg:grid-cols-[1fr,320px]">
-        {/* Stats Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Total Bookings
-              </CardTitle>
-              <Calendar className="h-5 w-5 text-primary" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.total}</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                All bookings for this property
-              </p>
-            </CardContent>
-          </Card>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Total Bookings
+            </CardTitle>
+            <Calendar className="h-5 w-5 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.total}</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              All bookings for this property
+            </p>
+          </CardContent>
+        </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Active Bookings
-              </CardTitle>
-              <Users className="h-5 w-5 text-success" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.active}</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Currently occupied rooms
-              </p>
-            </CardContent>
-          </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Active Bookings
+            </CardTitle>
+            <Users className="h-5 w-5 text-success" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.active}</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Currently occupied rooms
+            </p>
+          </CardContent>
+        </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Upcoming Bookings
-              </CardTitle>
-              <TrendingUp className="h-5 w-5 text-accent" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.upcoming}</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Future check-ins
-              </p>
-            </CardContent>
-          </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Upcoming Bookings
+            </CardTitle>
+            <TrendingUp className="h-5 w-5 text-accent" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.upcoming}</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Future check-ins
+            </p>
+          </CardContent>
+        </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                Pending Bookings
-              </CardTitle>
-              <Calendar className="h-5 w-5 text-yellow-600" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.pending}</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                Awaiting confirmation
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Quick Booking Card */}
-        <div className="lg:row-span-2">
-          <QuickBookingCard onBookingCreated={handleAddBooking} />
-        </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">
+              Pending Bookings
+            </CardTitle>
+            <Calendar className="h-5 w-5 text-yellow-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{stats.pending}</div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Awaiting confirmation
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Filters - Only show in table view */}

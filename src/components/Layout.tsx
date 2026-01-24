@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PGSelector } from "@/components/PGSelector";
+import { HelpSupportDialog } from "@/components/HelpSupportDialog";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -76,7 +77,8 @@ const Layout = () => {
         })}
       </nav>
 
-      <div className="p-4 border-t border-sidebar-border/50">
+      <div className="p-4 border-t border-sidebar-border/50 space-y-1">
+        <HelpSupportDialog />
         <Link to="/auth">
           <Button 
             variant="ghost" 
