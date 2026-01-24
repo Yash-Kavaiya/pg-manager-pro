@@ -1,0 +1,9 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '--build-arg', 'VITE_API_URL=${_VITE_API_URL}', '-t', 'gcr.io/discord-bot-8fdf5/pg-manager-frontend', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/discord-bot-8fdf5/pg-manager-frontend']
+substitutions:
+  _VITE_API_URL: ''
+images:
+- 'gcr.io/discord-bot-8fdf5/pg-manager-frontend'

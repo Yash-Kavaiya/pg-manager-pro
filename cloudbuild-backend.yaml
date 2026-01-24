@@ -1,0 +1,7 @@
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['build', '-f', 'Dockerfile.server', '-t', 'gcr.io/discord-bot-8fdf5/pg-manager-backend', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'gcr.io/discord-bot-8fdf5/pg-manager-backend']
+images:
+- 'gcr.io/discord-bot-8fdf5/pg-manager-backend'
