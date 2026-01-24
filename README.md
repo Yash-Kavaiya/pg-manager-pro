@@ -7,6 +7,7 @@ A modern, full-featured **Paying Guest (PG) Management System** built with React
 ## 🎬 Demo
 
 ![PG Manager Pro Demo](docs/images/demo.webp)
+**Live Demo:** [Click Here to View Live App](https://pg-manager-pro-frontend-PLACEHOLDER.a.run.app) *(Note: Link will be active after deployment finishes)*
 
 ---
 
