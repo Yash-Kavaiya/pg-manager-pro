@@ -1,15 +1,18 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Plus, Search, Bed, Users, IndianRupee, Eye, Pencil, Trash2 } from "lucide-react";
+import { Plus, Search, Bed, Users, IndianRupee, Eye, Pencil, Trash2, LayoutGrid, Box } from "lucide-react";
 import { usePGContext } from "@/context/PGContext";
 import { Room } from "@/types";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Skeleton } from "@/components/ui/skeleton";
+
+const RoomFloorMap3D = lazy(() => import("@/components/RoomFloorMap3D"));
 
 const Rooms = () => {
   const { selectedPG, rooms: allRooms, setRooms } = usePGContext();
@@ -21,6 +24,7 @@ const Rooms = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("All");
   const [typeFilter, setTypeFilter] = useState<string>("All");
+  const [viewMode, setViewMode] = useState<"grid" | "3d">("grid");
 
   // Form state
   const [formData, setFormData] = useState({
@@ -163,10 +167,32 @@ const Rooms = () => {
             {selectedPG ? `${selectedPG.name} - ${rooms.length} rooms` : 'Select a property to view rooms'}
           </p>
         </div>
-        <Button onClick={openAddDialog} disabled={!selectedPG}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Room
-        </Button>
+        <div className="flex items-center gap-2">
+          <div className="flex rounded-lg border border-border overflow-hidden">
+            <Button
+              variant={viewMode === "grid" ? "default" : "ghost"}
+              size="sm"
+              className="rounded-none border-0 h-9 px-3 gap-1.5"
+              onClick={() => setViewMode("grid")}
+            >
+              <LayoutGrid className="h-4 w-4" />
+              Grid
+            </Button>
+            <Button
+              variant={viewMode === "3d" ? "default" : "ghost"}
+              size="sm"
+              className="rounded-none border-0 h-9 px-3 gap-1.5"
+              onClick={() => setViewMode("3d")}
+            >
+              <Box className="h-4 w-4" />
+              3D View
+            </Button>
+          </div>
+          <Button onClick={openAddDialog} disabled={!selectedPG}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Room
+          </Button>
+        </div>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4">
@@ -203,7 +229,15 @@ const Rooms = () => {
         </Select>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {viewMode === "3d" && (
+        <Suspense fallback={
+          <Skeleton className="w-full rounded-xl" style={{ height: 560 }} />
+        }>
+          <RoomFloorMap3D rooms={rooms} />
+        </Suspense>
+      )}
+
+      {viewMode === "grid" && <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {rooms.map((room) => (
           <Card key={room.id} className="glass-card hover:shadow-lg transition-all duration-300 group">
             <CardHeader className="pb-2">
@@ -260,7 +294,7 @@ const Rooms = () => {
             </CardFooter>
           </Card>
         ))}
-      </div>
+      </div>}
 
       {rooms.length === 0 && (
         <div className="text-center py-12">
