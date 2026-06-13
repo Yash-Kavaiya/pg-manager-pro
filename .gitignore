@@ -28,3 +28,11 @@ server/.env
 *.njsproj
 *.sln
 *.sw?
+
+# Claude Code / tooling artifacts
+.claude/
+.playwright-mcp/
+
+# Local verification screenshots
+rooms-3d-final.png
+rooms-3d-zoomed.png

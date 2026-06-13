@@ -7,6 +7,7 @@ interface PGContextType {
   setSelectedPG: (pg: PG) => void;
   pgs: PG[];
   setPGs: (pgs: PG[]) => void;
+  updatePG: (id: string, pg: Partial<PG>) => void;
   // Data for the selected PG
   rooms: Room[];
   setRooms: (rooms: Room[]) => void;
@@ -67,6 +68,13 @@ export const PGProvider: React.FC<PGProviderProps> = ({ children }) => {
     setSelectedPGState(pg);
     // Store the selected PG ID in localStorage for persistence
     localStorage.setItem('selectedPGId', pg.id);
+  };
+
+  const updatePG = (id: string, updatedPG: Partial<PG>) => {
+    setPGs(pgs.map(pg => (pg.id === id ? { ...pg, ...updatedPG } : pg)));
+    setSelectedPGState(prev =>
+      prev?.id === id ? { ...prev, ...updatedPG } : prev
+    );
   };
 
   // Tenant CRUD operations
@@ -145,6 +153,7 @@ export const PGProvider: React.FC<PGProviderProps> = ({ children }) => {
     setSelectedPG,
     pgs,
     setPGs,
+    updatePG,
     rooms,
     setRooms,
     tenants,
